@@ -18,12 +18,10 @@ function modal(id,content){
 		    },
 			error: function (xhr,thrownError){
 				ext = xhr.status;
-				if (ext == '404'){
-					$('#'+id).append('<div class="modAlert"><h3>'+content+'</h3><input class="modalAcept" type="button" value="Aceptar"></div>');
-					$(".modalAcept").click(function(){
-						$('#'+id).css('display','none');
-					})
-				}
+				$('#'+id).append('<div class="modAlert"><h3>'+content+'</h3><input class="modalAcept" type="button" value="Aceptar"></div>');
+				$(".modalAcept").click(function(){
+					$('#'+id).css('display','none');
+				})
 			}
 		});
 	}else{
