@@ -2,7 +2,7 @@ function modal(id,content){
 	if ($("#"+id).length == 0){
 		$('body').append('<div id="'+id+'" class="modal" ></div>');
 		$.ajax({
-			url: '/'+content,async: true,
+			url: '/'+content,type: 'GET',async: true,
 			success: function(data) {
 				$('#'+id).append('<div id="modal"><span class="modalClose">×</span>'+data+'</div>');
 				var modal = document.getElementById(id);
