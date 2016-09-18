@@ -211,6 +211,7 @@ function faceLogin(req){
 		},{scope: 'public_profile, user_likes, user_friends, email'});  
 	}
 }
+document.oncontextmenu = function(){return false;}
 $(document).ready(function(){ 
 	faceLogin('acces');
 });
