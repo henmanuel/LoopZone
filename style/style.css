@@ -15,6 +15,9 @@ body{
 	background-color:#f5f5ef;
 	font-family:basic;
 }
+h2{
+	margin:12px;
+}
 canvas {
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -79,25 +82,26 @@ input:focus {
 	height:100%;
 	top:0;
 	left:0;
-	display: flex;
+	display: none;
 	align-items: center;
 	position:fixed;
-	z-index:1000;
+	z-index:10;
 	background-color:rgb(0,0,0);
 	background-color: rgba(0,0,0,0.9);
 }
 #modal{
-	margin:auto;
+	width:100%;
+	height:100%;
+	box-sizing: border-box;
+	overflow: scroll;
 	background-color:white;
 	border:1px solid #888;
 }
 .modalClose{
-	display:block;
 	float:right;
 	color:#aaaaaa;	
 	text-align:center;
-	position: relative;
-	font-size:30px;
+	font-size:45px;
 	text-decoration:none;
 	cursor:pointer;
 }
@@ -120,6 +124,53 @@ input:focus {
 	color:#888;
 	font-size:25px;
 }
+#board{
+	width:100%;
+	height:100%;
+}
+#userBar{
+	width:auto;
+	height:50px;
+	padding-top:5px;
+	position: fixed;
+	float:left;
+	background-color:rgba(255, 255, 255,0.7);
+}
+#userBar img,h2{
+	float:left;
+	display: inline-block;
+	margin-left:5px;
+}
+#skills{
+	width: 100%;
+    float: left;
+}
+#skills canvas{
+	display:block;
+	margin: 0 auto;
+}
+#post{
+	width: 100%;
+	height: 300px;
+	float:left;
+}
+#post img{
+	width: 20%;
+	display: block;
+	top: 100px;
+	margin: 0 auto;
+}
+#stadistics{
+	width: 100%;
+	height: 300px;
+	float: left;
+}
+#stadistics img{
+	width: 90%;
+	height: 250px;
+	display: block;
+	margin: 0 auto;
+}
 @media only screen and (min-width:800px) {
 	#serch{
 		width:30%;
@@ -127,5 +178,31 @@ input:focus {
 	}
 	#loopHome h1{
 		display: block;
+		color: rgb(224, 224, 209);
+	}
+	#modal{
+		width:auto;
+		height:auto;
+		margin:auto;
+		overflow: hidden;
+	}
+	#board{
+		width:720px;
+		height:620px;
+	}
+	#skills{
+		width: 50%;
+	    float: left;
+	    margin-top: 60px;
+	}
+	#post{
+		width: 50%;
+		height: 300px;
+		float:right;
+	}
+	#stadistics{
+		width: 100%;
+		height: 250px;
+		float: left;
 	}
 }

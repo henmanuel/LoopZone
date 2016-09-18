@@ -23,45 +23,172 @@ function modal(id,content){
 				})
 			}
 		});
-	}else{
-		$('#'+id).css('display','flex');
 	}
 }
 function plus(){//objeto longPress
 	var pressTimer;
 	$('#plusCont').remove('#plusLogIn');
-	$('#plusCont').append('<img id="plus" class="plus" src="style/img/plus.png">');
-	$('#plus').mousedown(function(){
-		pressTimer = window.setTimeout(function() {// evento longPress
-			modal('userDash','dash del usuario');
-		},300);
-	}).mouseup(function(){// evento click
-		clearTimeout(pressTimer);
-		var barOn = $('#barra').css("display");
-		if (barOn != "none"){
-			$('#barra').css("display","none");
-			$('#content').css("padding-top","25px");
-			$('#contUser').css("margin-top","2%");
+	if ($("#plus").length == 0){
+		$('#plusCont').append('<img id="plus" class="plus" src="style/img/plus.png">');
+		$('#plus').mousedown(function(){
+			pressTimer = window.setTimeout(function() {// evento longPress
+				$('#userDash').css('display','flex');
+			},300);
+		}).mouseup(function(){// evento click
+			clearTimeout(pressTimer);
+			var barOn = $('#barra').css("display");
+			if (barOn != "none"){
+				$('#barra').css("display","none");
+				$('#content').css("padding-top","25px");
+				$('#contUser').css("margin-top","2%");
+			}else{
+				$('#barra').css("display","block");
+				$('#content').css("padding-top","100px");
+				$('#contUser').css("margin-top","");
+			} 
+		});
+	}
+}
+function chart(){
+	var config = {
+	    data: {
+	        datasets: [{
+	            data: [
+	                1,
+	            ],
+	            backgroundColor: [
+	                "rgba(235, 235, 224, 0.5)",
+	            ],
+	            label: 'My dataset' // for legend
+	        }],
+	        labels: [
+	            "Click Para Editar Vision",
+	        ]
+	    },
+	    options: {
+	        responsive: false,
+	        legend: {
+	            display: false,
+	        },
+	        title: {
+	            display: true,
+	            text: 'Vision Personal'
+	        },
+	        scale: {
+	          ticks: {
+	            max: 5,
+	            min: 0,
+	          }, 
+	        },
+	    }
+	};
+	resp = request('objetive');
+   	console.log(resp);
+    var ctx = document.getElementById("chart-area");
+    myPolarArea = Chart.PolarArea(ctx, config);
+    $("#chart-area").click(function(e) {
+        var activeElements = myPolarArea.getElementsAtEvent(e);
+        try {
+            req = activeElements[0]['_model']['label']; 
+        }
+        catch(err) {
+            req = "noElement";
+        }
+        if (req != "noElement"){
+        	if (req == "Click Para Editar Vision"){
+        		$('#vision').css('display','block');
+        	}else{
+        		
+        	}
+        }
+    });
+};
+function auth(req){
+	FB.api('/me?fields=id,name,email,birthday', function(response) {
+		if(response.error){
+			faceLogin(req);
 		}else{
-			$('#barra').css("display","block");
-			$('#content').css("padding-top","100px");
-			$('#contUser').css("margin-top","");
-		} 
+			$.ajax({
+			    url: "models/index.php",
+			    type: "POST",
+			    dataType: 'jsonp',
+			    processData: true,
+			    data: {id:response.id, name:response.name, email:response.email, birthday:response.birthday},
+			    headers: {
+			        "Access-Control-Allow-Origin": "*",
+			        "Access-Control-Allow-Headers": "origin, content-type, accept"
+			    },
+			    success: function(data) {
+			        localStorage['token']=data;
+			        request(req);
+			    }
+			});
+		}
+
 	});
 }
+function request(req, callback){
+	var resp;
+	if (typeof(Storage) !== "undefined") {
+		var token = localStorage['token'];
+		if (typeof(token)  !== "undefined"){
+			jqXHR = $.ajax({
+			    url: "models/index.php",
+			    type: "POST",
+			    dataType: 'jsonp',
+			    async:false,
+			    processData: true,
+			    data: {tK:token,request:req},
+			    headers: {
+			        "Access-Control-Allow-Origin": "*",
+			        "Access-Control-Allow-Headers": "origin, content-type, accept"
+			    },
+			    success: function(data) {
+			    	if (data === "expTk"){
+			    		localStorage.clear();
+			    		auth(req);
+			    	}else if(data === "warning"){
+			    		modal('warnigSecure','views/warningSecure.html');
+			    	}else{
+			    		console.log(data);
+			    	}
+			    }
+			});
+			//return jqXHR.responseJSON[1];
+		}else{
+			auth(req);
+		}
+	}else{
+		alert('Su browser no soporta el almacenamiento local, necesario para el correcto funcionamiento del sistema');
+	}
+}
 function faceLogin(req){
-	window.fbAsyncInit = function(){
+	console.log('faceLogin '+req);
+	(function(d, s, id){
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.id = id;
+		js.src = "//connect.facebook.net/es_LA/sdk.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+
+	window.fbAsyncInit = function() {
 		FB.init({
-		appId      : '1413878928878484',
-		xfbml      : true,
-		version    : 'v2.7'
+			appId      : '1413878928878484',
+			xfbml      : true,
+			version    : 'v2.7'
 		});
-		statusUser();
+		statusUser(req);
 	};
-	function statusUser(){  
+	if(req != 'acces'){
+		login(req);
+	}
+	function statusUser(req){  
 		FB.getLoginStatus(function(response){  
 			if (response.status === 'connected'){
+				request(req);
 				plus();
+				modal('userDash','views/dashBoard.html');
 			}else if(response.status === 'not_authorized'){
 				modal('authModal','views/authorized.html');
 			}else{
@@ -71,24 +198,18 @@ function faceLogin(req){
 				});
 				localStorage.clear();
 			} 
-		});  
+		}); 
 	} 
-	function login(){  
+	function login(req){  
 		FB.login(function(response){ 
 			if (response['status']  == "unknown"){
 				modal('authModal','views/authorized.html');
 			}else{
-				statusUser();
-			} 	  
+				statusUser(req);
+			} 
+			console.log('login '+response);	  
 		},{scope: 'public_profile, user_likes, user_friends, email'});  
 	}
-	(function(d, s, id){
-	var js, fjs = d.getElementsByTagName(s)[0];
-	if (d.getElementById(id)) {return;}
-	js = d.createElement(s); js.id = id;
-	js.src = "//connect.facebook.net/es_LA/sdk.js";
-	fjs.parentNode.insertBefore(js, fjs);
-	}(document, 'script', 'facebook-jssdk'));
 }
 $(document).ready(function(){ 
 	faceLogin('acces');
