@@ -2,7 +2,7 @@ function modal(id,content){
 	if ($("#"+id).length == 0){
 		$('body').append('<div id="'+id+'" class="modal" ></div>');
 		$.ajax({
-			url:content,async:true,
+			url:content,
 			success: function(data){
 				$('#'+id).append('<div id="modal"><span class="modalClose">×</span>'+data+'</div>');
 				var modal = document.getElementById(id);
@@ -32,7 +32,13 @@ function plus(){//objeto longPress
 		$('#plusCont').append('<img id="plus" class="plus" src="style/img/plus.png">');
 		$('#plus').mousedown(function(){
 			pressTimer = window.setTimeout(function() {// evento longPress
-				$('#userDash').css('display','flex');
+				
+				if($('#userDash').length > 0){
+					$('#userDash').css('display','flex');
+				}else{
+					modal('userDash','views/dashBoard.html');
+					$('#userDash').css('display','flex');
+				}
 			},300);
 		}).mouseup(function(){// evento click
 			clearTimeout(pressTimer);
@@ -49,103 +55,6 @@ function plus(){//objeto longPress
 		});
 	}
 }
-function chart(){
-	var config = {
-	    data: {
-	        datasets: [{
-	            data: [
-	                1,
-	            ],
-	            backgroundColor: [
-	                "rgba(235, 235, 224, 0.5)",
-	            ],
-	            label: 'My dataset' // for legend
-	        }],
-	        labels: [
-	            "Click para agregar Vision",
-	        ]
-	    },
-	    options: {
-	        responsive: false,
-	        legend: {
-	            display: true,
-	        },
-	        title: {
-	            display: true,
-	            text: 'Vision Personal'
-	        },
-	        scale: {
-	          ticks: {
-	            max: 5,
-	            min: 0,
-	          }, 
-	        },
-	    }
-	};
-
-    var ctx = document.getElementById("chart-area");
-    myPolarArea = Chart.PolarArea(ctx, config);
-
-    resp = request('vision','vision.loopuserid = loopUser.id');
-
-	if (resp != false) {
-		config.data.labels.pop(); // remove the label first
-
-        $.each(config.data.datasets, function(i, dataset) {
-            dataset.backgroundColor.pop();
-            dataset.data.pop();
-        });
-
-		var randomColorFactor = function() {
-	        return Math.round(Math.random() * 255);
-	    };
-	    var randomColor = function(opacity) {
-	        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
-	    };
-	    for (var i in resp ) {
-	    	$.each(config.data.datasets, function(j, dataset) {
-		    	config.data.labels.push(resp[i]['vision.name']);
-		        dataset.backgroundColor.push(randomColor());
-		        dataset.data.push(i);
-	    	})
-	    }
-	    
-	    window.myPolarArea.update();
-
-	    $("#chart-area").click(function(e) {
-	        var activeElements = myPolarArea.getElementsAtEvent(e);
-	        try {
-	            req = activeElements[0]['_model']['label']; 
-	        }
-	        catch(err) {
-	            req = "noElement";
-	        }
-	        if (req != "noElement"){
-	        	
-	        }
-    	});
-	}else{
-
-	    $("#chart-area").click(function(e) {
-	        var activeElements = myPolarArea.getElementsAtEvent(e);
-	        try {
-	            req = activeElements[0]['_model']['label']; 
-	        }
-	        catch(err) {
-	            req = "noElement";
-	        }
-	        if (req != "noElement"){
-	        	if (req == "Click para agregar Vision"){
-	        		$('#visionadd').css('display','block');
-	        		$('#visionadd').load('views/visionadd.html');
-	        	}
-	        }
-    	});
-    }
-}
-function proyects(proyect,vision){
-
-}
 function auth(req,condition){
 	FB.api('/me?fields=id,name,email,birthday', function(response) {
 		if(response.error){
@@ -155,7 +64,6 @@ function auth(req,condition){
 			    url: "models/index.php",
 			    type: "POST",
 			    dataType: 'jsonp',
-			    processData: true,
 			    data: {id:response.id, name:response.name, email:response.email, birthday:response.birthday},
 			    headers: {
 			        "Access-Control-Allow-Origin": "*",
@@ -163,7 +71,9 @@ function auth(req,condition){
 			    },
 			    success: function(data) {
 			        localStorage['token']=data;
-			        request(req,condition);
+			        if (typeof(condition) !== "undefined"){
+						request(req,condition);
+			        }
 			    }
 			});
 		}
@@ -171,16 +81,17 @@ function auth(req,condition){
 	});
 }
 function request(req, condition){
+	var datas = req.split('/');
 	if (typeof(Storage) !== "undefined") {
 		var token = localStorage['token'];
 		if (typeof(token)  !== "undefined"){
 			jqXHR = $.ajax({
 			    url: "models/index.php",
-			    type: "POST",
+			    type: datas[0],
 			    dataType: 'jsonp',
 			    async:false,
 			    processData: true,
-			    data: {tK:token,request:req,condition:condition},
+			    data: {tK:token,request:datas[1],condition:condition},
 			    headers: {
 			        "Access-Control-Allow-Origin": "*",
 			        "Access-Control-Allow-Headers": "origin, content-type, accept"
@@ -188,11 +99,17 @@ function request(req, condition){
 			    success: function(data) {
 			    	if (data === "expTk"){
 			    		localStorage.clear();
-			    		auth(req);
+			    		auth(req,condition);
+			    		console.log(data);
 			    	}else if(data === "warning"){
-			    		modal('warnigSecure','views/warningSecure.html');
+			    		modal('warnigSecure','Se detecto in intento de acceso incorrepto');
+			    	}else{
+			    		delete req,condition;
 			    	}
-			    }
+			    },
+				error: function (xhr,thrownError){
+					//Tipo error
+				}
 			});
 			return jqXHR.responseJSON;
 		}else{
@@ -217,7 +134,7 @@ function faceLogin(req,condition){
 			xfbml      : true,
 			version    : 'v2.7'
 		});
-		statusUser(req,condition);
+		statusUser(req);
 	};
 	if(req != 'acces'){
 		login(req,condition);
@@ -226,7 +143,6 @@ function faceLogin(req,condition){
 		FB.getLoginStatus(function(response){  
 			if (response.status === 'connected'){
 				request(req,condition);
-				modal('userDash','views/dashBoard.html');
 				plus();
 			}else if(response.status === 'not_authorized'){
 				modal('authModal','views/authorized.html');

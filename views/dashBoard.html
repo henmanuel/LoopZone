@@ -14,18 +14,114 @@
 	</section>
 	<section id="stadistics"><img src="style/img/graph.jpg"></section>
 	
-	<!--UserBar controller FB.api-->
-		<script>
-			$(document).ready(function(){ 
-				FB.api('/me/picture', function(response){
-					$('#userBar').append('<img src="'+response.data.url+'">');
-				});
-				FB.api('/me?fields=id,name,email,birthday', function(response) {
-					$('#userBar').append('<h2>'+response.name+'</h2>');
-				});
-				chart();//chart controller
-			});
-		</script>
-	<!--UserBar controller-->
+	<!--DashBoard controller y FB.api UserBar -->
+	<script>
+		function chart(){
+			var config = {
+			    data: {
+			        datasets: [{
+			            data: [
+			                1,
+			            ],
+			            backgroundColor: [
+			                "rgba(235, 235, 224, 0.5)",
+			            ],
+			            label: 'My dataset' // for legend
+			        }],
+			        labels: [
+			            "Click para agregar Vision",
+			        ]
+			    },
+			    options: {
+			        responsive: false,
+			        legend: {
+			            display: false,
+			        },
+			        title: {
+			            display: true,
+			            text: 'Vision Personal'
+			        },
+			        scale: {
+			          ticks: {
+			            max: 5,
+			            min: 0,
+			          }, 
+			        },
+			    }
+			};
+
+		    var ctx = document.getElementById("chart-area");
+		    myPolarArea = Chart.PolarArea(ctx, config);
+
+			resp = request('get/vision','vision.loopuserid = loopUser.id');
+
+			if (resp != false) {
+
+
+				config.data.labels.pop();
+
+		        $.each(config.data.datasets, function(i, dataset) {
+		            dataset.backgroundColor.pop();
+		            dataset.data.pop();
+		        });
+
+				var randomColorFactor = function() {
+			        return Math.round(Math.random() * 255);
+			    };
+			    var randomColor = function(opacity) {
+			        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+			    };
+
+			    for (var i in resp ) {
+			    	$.each(config.data.datasets, function(j, dataset) {
+				    	config.data.labels.push(resp[i]['vision.name']);
+				        dataset.backgroundColor.push(randomColor());
+				        dataset.data.push(i);
+			    	})
+			    }
+			    
+			    window.myPolarArea.update();
+
+			    $("#chart-area").click(function(e) {
+			        var activeElements = myPolarArea.getElementsAtEvent(e);
+			        try {
+			            req = activeElements[0]['_model']['label']; 
+			        }
+			        catch(err) {
+			            req = "noElement";
+			        }
+			        if (req != "noElement"){
+			        	
+			        }
+		    	});
+			}else{
+
+			    $("#chart-area").click(function(e) {
+			        var activeElements = myPolarArea.getElementsAtEvent(e);
+			        try {
+			            req = activeElements[0]['_model']['label']; 
+			        }
+			        catch(err) {
+			            req = "noElement";
+			        }
+			        if (req != "noElement"){
+			        	if (req == "Click para agregar Vision"){
+			        		$('#visionadd').css('display','block');
+			        		$('#visionadd').load('views/visionadd.html');
+			        	}
+			        }
+		    	});
+		    }
+		}
+		FB.api('/me/picture', function(response){
+				$('#userBar').append('<img src="'+response.data.url+'">');
+		});
+		FB.api('/me?fields=id,name,email,birthday', function(response) {
+			$('#userBar').append('<h2>'+response.name+'</h2>');
+		});
+		$(document).ready(function(){ 
+			chart();//chart controller
+		});
+	</script>
+	<!--DashBoard controller-->
 </div>
-      
