@@ -149,16 +149,126 @@ input:focus {
 	display:block;
 	margin: 0 auto;
 }
-#post{
+#documents{
 	width: 100%;
 	height: 300px;
 	float:left;
 }
-#post img{
+#documents img{
 	width: 20%;
 	display: block;
 	top: 100px;
 	margin: 0 auto;
+}
+#visionadd{
+	width: 100%;
+	height: 300px;
+	float:left;
+	display:none;
+	text-align: center;
+}
+#visionadd h1{
+	margin-top: 0px;
+	margin-bottom: 5px;
+}
+#visionadd input{
+	text-align: center;
+	font-size: 20px;
+}
+#nameVision{
+	width: 80%;
+	height: 30px;
+	display:block;
+	margin:0 auto;
+}
+#sepVision{
+	width: 100%;
+	height: 12px;
+	float: left;
+}
+#desc{
+	width: 80%;
+	height: 50px;
+	display:block;
+	top: 10px;
+	margin:0 auto;
+}
+#sendVision{
+	width: 100px;
+	height: 40px;
+	margin-top: 10px;
+	background-color: rgba(0, 0, 0, 0.4);
+	border: 1px solid white;
+	color: white;
+}
+.switch {
+  position: relative;
+  display: block;
+  margin:0 auto;
+  width: 100px;
+  height: 34px;
+}
+
+.switch input {display:none;}
+
+.lapseVision {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #80ff80;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.lapseVision:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .lapseVision {
+  background-color: #2196F3;
+}
+
+input:focus + .lapseVision {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .lapseVision:before {
+  -webkit-transform: translateX(66px);
+  -ms-transform: translateX(66px);
+  transform: translateX(66px);
+}
+
+/* Rounded lapseVision */
+.lapseVision.round {
+  border-radius: 34px;
+}
+
+.lapseVision.round:before {
+  border-radius: 50%;
+}
+
+#proyects{
+	width: 100%;
+	height: 300px;
+	float:left;
+	display:none;
+}
+#objetives{
+	width: 100%;
+	height: 300px;
+	float:left;
+	display:none;
 }
 #stadistics{
 	width: 100%;
@@ -195,9 +305,8 @@ input:focus {
 	    float: left;
 	    margin-top: 60px;
 	}
-	#post{
+	#documents{
 		width: 50%;
-		height: 300px;
 		float:right;
 	}
 	#stadistics{

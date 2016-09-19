@@ -62,13 +62,13 @@ function chart(){
 	            label: 'My dataset' // for legend
 	        }],
 	        labels: [
-	            "Click Para Editar Vision",
+	            "Click para agregar Vision",
 	        ]
 	    },
 	    options: {
 	        responsive: false,
 	        legend: {
-	            display: false,
+	            display: true,
 	        },
 	        title: {
 	            display: true,
@@ -82,31 +82,74 @@ function chart(){
 	        },
 	    }
 	};
-	resp = request('objetive');
-   	console.log(resp);
+
     var ctx = document.getElementById("chart-area");
     myPolarArea = Chart.PolarArea(ctx, config);
-    $("#chart-area").click(function(e) {
-        var activeElements = myPolarArea.getElementsAtEvent(e);
-        try {
-            req = activeElements[0]['_model']['label']; 
-        }
-        catch(err) {
-            req = "noElement";
-        }
-        if (req != "noElement"){
-        	if (req == "Click Para Editar Vision"){
-        		$('#vision').css('display','block');
-        	}else{
-        		
-        	}
-        }
-    });
-};
-function auth(req){
+
+    resp = request('vision','vision.loopuserid = loopUser.id');
+
+	if (resp != false) {
+		config.data.labels.pop(); // remove the label first
+
+        $.each(config.data.datasets, function(i, dataset) {
+            dataset.backgroundColor.pop();
+            dataset.data.pop();
+        });
+
+		var randomColorFactor = function() {
+	        return Math.round(Math.random() * 255);
+	    };
+	    var randomColor = function(opacity) {
+	        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+	    };
+	    for (var i in resp ) {
+	    	$.each(config.data.datasets, function(j, dataset) {
+		    	config.data.labels.push(resp[i]['vision.name']);
+		        dataset.backgroundColor.push(randomColor());
+		        dataset.data.push(i);
+	    	})
+	    }
+	    
+	    window.myPolarArea.update();
+
+	    $("#chart-area").click(function(e) {
+	        var activeElements = myPolarArea.getElementsAtEvent(e);
+	        try {
+	            req = activeElements[0]['_model']['label']; 
+	        }
+	        catch(err) {
+	            req = "noElement";
+	        }
+	        if (req != "noElement"){
+	        	
+	        }
+    	});
+	}else{
+
+	    $("#chart-area").click(function(e) {
+	        var activeElements = myPolarArea.getElementsAtEvent(e);
+	        try {
+	            req = activeElements[0]['_model']['label']; 
+	        }
+	        catch(err) {
+	            req = "noElement";
+	        }
+	        if (req != "noElement"){
+	        	if (req == "Click para agregar Vision"){
+	        		$('#visionadd').css('display','block');
+	        		$('#visionadd').load('views/visionadd.html');
+	        	}
+	        }
+    	});
+    }
+}
+function proyects(proyect,vision){
+
+}
+function auth(req,condition){
 	FB.api('/me?fields=id,name,email,birthday', function(response) {
 		if(response.error){
-			faceLogin(req);
+			faceLogin(req,condition);
 		}else{
 			$.ajax({
 			    url: "models/index.php",
@@ -120,15 +163,14 @@ function auth(req){
 			    },
 			    success: function(data) {
 			        localStorage['token']=data;
-			        request(req);
+			        request(req,condition);
 			    }
 			});
 		}
 
 	});
 }
-function request(req, callback){
-	var resp;
+function request(req, condition){
 	if (typeof(Storage) !== "undefined") {
 		var token = localStorage['token'];
 		if (typeof(token)  !== "undefined"){
@@ -138,7 +180,7 @@ function request(req, callback){
 			    dataType: 'jsonp',
 			    async:false,
 			    processData: true,
-			    data: {tK:token,request:req},
+			    data: {tK:token,request:req,condition:condition},
 			    headers: {
 			        "Access-Control-Allow-Origin": "*",
 			        "Access-Control-Allow-Headers": "origin, content-type, accept"
@@ -149,12 +191,10 @@ function request(req, callback){
 			    		auth(req);
 			    	}else if(data === "warning"){
 			    		modal('warnigSecure','views/warningSecure.html');
-			    	}else{
-			    		console.log(data);
 			    	}
 			    }
 			});
-			//return jqXHR.responseJSON[1];
+			return jqXHR.responseJSON;
 		}else{
 			auth(req);
 		}
@@ -162,8 +202,7 @@ function request(req, callback){
 		alert('Su browser no soporta el almacenamiento local, necesario para el correcto funcionamiento del sistema');
 	}
 }
-function faceLogin(req){
-	console.log('faceLogin '+req);
+function faceLogin(req,condition){
 	(function(d, s, id){
 		var js, fjs = d.getElementsByTagName(s)[0];
 		if (d.getElementById(id)) {return;}
@@ -178,36 +217,35 @@ function faceLogin(req){
 			xfbml      : true,
 			version    : 'v2.7'
 		});
-		statusUser(req);
+		statusUser(req,condition);
 	};
 	if(req != 'acces'){
-		login(req);
+		login(req,condition);
 	}
-	function statusUser(req){  
+	function statusUser(req,condition){  
 		FB.getLoginStatus(function(response){  
 			if (response.status === 'connected'){
-				request(req);
-				plus();
+				request(req,condition);
 				modal('userDash','views/dashBoard.html');
+				plus();
 			}else if(response.status === 'not_authorized'){
 				modal('authModal','views/authorized.html');
 			}else{
 				$('#plusCont').append('<img id="plusLogIn" class="plus" src="style/img/fb.png">');
 				$('#plusLogIn').click(function(){
-					login();
+					login(req,condition);
 				});
 				localStorage.clear();
 			} 
 		}); 
 	} 
-	function login(req){  
+	function login(req,condition){  
 		FB.login(function(response){ 
 			if (response['status']  == "unknown"){
 				modal('authModal','views/authorized.html');
 			}else{
-				statusUser(req);
-			} 
-			console.log('login '+response);	  
+				statusUser(req,condition);
+			} 	  
 		},{scope: 'public_profile, user_likes, user_friends, email'});  
 	}
 }

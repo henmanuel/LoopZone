@@ -2,5 +2,5 @@
 $server = 'localhost';
 $userDB = 'root';
 $passUdb = '';
-$DB = 'loopuser';
+$DB = 'loop';
 ?>

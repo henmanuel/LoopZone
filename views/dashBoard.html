@@ -1,20 +1,31 @@
 <div id="board">
 	<section id="userBar" class="closePlug"></section>
-	<section id="skills"><canvas id="chart-area" width="300px" height="300px" margin="auto"></canvas></section>
+	<section id="skills">
+		<section id="vision">
+			<canvas id="chart-area" width="300px" height="300px" margin="auto"></canvas>
+		</section>
+	</section>
 
-	<section id="post"><h1 style="text-align:center;">Documentos</h1><img src="style/img/lapiz.png"></section>
+	<section id="documents">
+		<!--<h1 style="text-align:center;">Documentos</h1><img src="style/img/lapiz.png">-->
+		<section id="visionadd"></section>
+		<section id="proyects"></section>
+		<section id="objetives"></section>
+	</section>
 	<section id="stadistics"><img src="style/img/graph.jpg"></section>
 	
 	<!--UserBar controller FB.api-->
 		<script>
-			FB.api('/me/picture', function(response){
-				$('#userBar').append('<img src="'+response.data.url+'">');
+			$(document).ready(function(){ 
+				FB.api('/me/picture', function(response){
+					$('#userBar').append('<img src="'+response.data.url+'">');
+				});
+				FB.api('/me?fields=id,name,email,birthday', function(response) {
+					$('#userBar').append('<h2>'+response.name+'</h2>');
+				});
+				chart();//chart controller
 			});
-			FB.api('/me?fields=id,name,email,birthday', function(response) {
-				$('#userBar').append('<h2>'+response.name+'</h2>');
-			});
-			chart();
 		</script>
-	<!--//UserBar controller-->
+	<!--UserBar controller-->
 </div>
       
