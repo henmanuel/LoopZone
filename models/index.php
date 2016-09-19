@@ -108,4 +108,3 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 }
 $rest = json_encode($result);
 echo($_GET['callback'].'('.$rest.');');
-unset($_GET);
