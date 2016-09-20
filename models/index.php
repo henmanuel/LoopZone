@@ -27,7 +27,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		for($i=0;$i<$contReq;$i++){ 
 			$$method[$i]=$parameter[$i]; 
 		}
-		unset($_POST);
+		//unset($_POST);
         break;
     case 'PUT':
         $contReq = count($_PUT);
@@ -37,7 +37,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		for($i=0;$i<$contReq;$i++){ 
 			$$method[$i]=$parameter[$i]; 
 		}
-		unset($_PUT);
+		//unset($_PUT);
         break;
     case 'DELETE':
         $contReq = count($_DELETE);
@@ -47,7 +47,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		for($i=0;$i<$contReq;$i++){ 
 			$$method[$i]=$parameter[$i]; 
 		}
-		unset($_DELETE);
+		//unset($_DELETE);
         break;
 }
 
@@ -89,11 +89,16 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 	}else{
 		$result = 'warning';
 	}
-}elseif (!empty($id)){
+}elseif (!empty($id) and empty($tk)){
 
 	$condition = 'name = "'.$name.'" and email = "'.$email.'"';
 	$result = $auth->serch('loopuser','name,email',$condition,false);
 
+	if (!isset($birthday)) {
+		$birthday = '00/00/0000';
+	}
+	$birthday = strtotime($birthday);
+	$birthday = date('Y-m-d',$birthday);
 	if ($result == false){
 		$options = '"'.$id.'","'.$name.'","'.$email.'","'.$birthday.'"';
 		$result = $auth->insert('loopuser','fbId,name,email,birthday',$options);
@@ -108,3 +113,4 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 }
 $rest = json_encode($result);
 echo($_GET['callback'].'('.$rest.');');
+unset($parameter);

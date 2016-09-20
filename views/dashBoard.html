@@ -105,9 +105,18 @@
 			            req = "noElement";
 			        }
 			        if (req != "noElement"){
+
+
 			        	if (req == "Click para agregar Vision"){
-			        		$('#visionadd').css('display','block');
-			        		$('#visionadd').load('views/visionadd.html');
+			        		var vsAdd = $('#visionadd').css('display');
+				        	if (vsAdd == 'none'){
+				        		$('#visionadd').css('display','block');
+				        		if ($("#nameVision").length == 0){
+									$('#visionadd').load('views/visionadd.html');
+				        		}
+				        	}else{
+				        		$('#visionadd').css('display','none');
+				        	}
 			        	}
 			        }
 		    	});
