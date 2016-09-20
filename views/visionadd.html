@@ -1,13 +1,33 @@
 <h1>Agregar Vision</h1>
 <input type="text" id="nameVision" placeholder="Nombre">
 <span id="sepVision"></span>
-<input type="text" id="desc" placeholder="Descripcion">
-<h3>3 años    5 años</h3>
+<input type="text" id="descVision" placeholder="Descripcion">
+<h3>3 años - 5 años</h3>
 <label class="switch">
-	<input type="checkbox">
+	<input type="checkbox" id="lapseVision">
 	<div class="lapseVision round"></div>
 </label>
 <input type="submit" value="Agregar" id="sendVision">
 <script>
-	
+	$('#sendVision').click(function(){
+		var name = $('#nameVision').val();
+		var desc = $('#descVision').val();
+		var lapse = $('#lapseVision').prop("checked");
+
+		day=new Date();
+		var month = day.getMonth()+1;
+
+		if (lapse == false){
+			var year = day.getFullYear() + 3;
+		}else{
+			var year = day.getFullYear() + 5;
+		}
+
+		var end = year+"-"+month+"-"+day.getDate();
+		day = day.getFullYear()+"-"+month+"-"+day.getDate();
+
+		var condition = 'loopuserid,name,description,start,end/"'+name+'","'+desc+'",'+day+','+end;
+		var con = request('post/vision',condition);
+		console.log(con);
+	});
 </script>

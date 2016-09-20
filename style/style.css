@@ -167,6 +167,8 @@ input:focus {
 	display:none;
 	margin-top: 20px;
 	text-align: center;
+	font-family: helvetica;
+	color: #ccccb3;
 }
 #visionadd h1{
 	margin-top: 0px;
@@ -187,7 +189,7 @@ input:focus {
 	height: 12px;
 	float: left;
 }
-#desc{
+#descVision{
 	width: 80%;
 	height: 50px;
 	display:block;

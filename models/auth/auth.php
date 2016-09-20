@@ -9,7 +9,7 @@ class Auth
     {
         $time = time();
         
-        $token = array('exp' => $time + (60*30),'aud' => self::Aud(),'data' => $data);
+        $token = array('exp' => $time + (60*60),'aud' => self::Aud(),'data' => $data);
 
         return JWT::encode($token, self::$secret_key);
     }

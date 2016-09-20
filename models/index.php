@@ -51,9 +51,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 }
 
-if(!empty($tK) and !empty($request) and !empty($condition)){
+if(!empty($tk) and !empty($request) and !empty($condition)){
 
-	$result = Auth::Check($tK);
+	$result = Auth::Check($tk);
 
 	if ($result === 'expTk'){
 		$result = $result;
@@ -61,20 +61,20 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 
 		if ($request != 'acces'){
 
+			$id = Auth::GetData($tk);
+
 			switch ($_SERVER['REQUEST_METHOD']) {
 
 			    case 'GET':
 
-			        $id = Auth::GetData($tK);
-					$condition = 'loopUser.fbId = "'.$id->id.'" and '.$condition;
+					$condition = 'loopUser.id = '.$id->id.' and '.$condition;
 					$result = $auth->serch('loopUser,'.$request,'loopUser.id,vision.id,vision.name,vision.description',$condition,true);
 			        break;
 			    case 'POST':
 
-			        $condition = explode($condition);
-			        $condition = $condition[0];
+			        $condition = explode('/',$condition);
 			        $options = $condition[1];
-			        $result = $auth->insert($req,$condition,$options);
+			        $result = $auth->insert($request,$condition[0],$id->id.','.$options);
 			        break;
 			    case 'PUT':
 			        //UPDATE
@@ -89,7 +89,7 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 	}else{
 		$result = 'warning';
 	}
-}elseif (!empty($id) and empty($tk)){
+}elseif (!empty($_POST['id']) and empty($tk)){
 
 	$condition = 'name = "'.$name.'" and email = "'.$email.'"';
 	$result = $auth->serch('loopuser','name,email',$condition,false);
@@ -104,8 +104,11 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 		$result = $auth->insert('loopuser','fbId,name,email,birthday',$options);
 	}
 
+	$condition = 'loopUser.fbId = "'.$id.'"';
+	$id = $auth->serch('loopUser','loopUser.id',$condition,true);
+
 	$result = Auth::SignIn([
-        'id' => $id,
+        'id' => $id[1]['loopUser.id'],
         'name' => $name
     ]);
 }else{
@@ -113,4 +116,3 @@ if(!empty($tK) and !empty($request) and !empty($condition)){
 }
 $rest = json_encode($result);
 echo($_GET['callback'].'('.$rest.');');
-unset($parameter);

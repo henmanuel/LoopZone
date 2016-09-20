@@ -91,7 +91,7 @@ function request(req, condition){
 			    dataType: 'jsonp',
 			    async:false,
 			    processData: true,
-			    data: {tK:token,request:datas[1],condition:condition},
+			    data: {tk:token,request:datas[1],condition:condition},
 			    headers: {
 			        "Access-Control-Allow-Origin": "*",
 			        "Access-Control-Allow-Headers": "origin, content-type, accept"
@@ -100,11 +100,8 @@ function request(req, condition){
 			    	if (data === "expTk"){
 			    		localStorage.clear();
 			    		auth(req,condition);
-			    		console.log(data);
 			    	}else if(data === "warning"){
 			    		modal('warnigSecure','Se detecto in intento de acceso incorrepto');
-			    	}else{
-			    		delete req,condition;
 			    	}
 			    },
 				error: function (xhr,thrownError){
@@ -113,7 +110,7 @@ function request(req, condition){
 			});
 			return jqXHR.responseJSON;
 		}else{
-			auth(req);
+			auth(req,condition);
 		}
 	}else{
 		alert('Su browser no soporta el almacenamiento local, necesario para el correcto funcionamiento del sistema');
@@ -136,9 +133,7 @@ function faceLogin(req,condition){
 		});
 		statusUser(req);
 	};
-	if(req != 'acces'){
-		login(req,condition);
-	}
+
 	function statusUser(req,condition){  
 		FB.getLoginStatus(function(response){  
 			if (response.status === 'connected'){
@@ -160,9 +155,12 @@ function faceLogin(req,condition){
 			if (response['status']  == "unknown"){
 				modal('authModal','views/authorized.html');
 			}else{
-				statusUser(req,condition);
+			    statusUser(req,condition);
 			} 	  
 		},{scope: 'public_profile, user_likes, user_friends, email'});  
+	}
+	if(req != 'acces'){
+		login(req,condition);
 	}
 }
 document.oncontextmenu = function(){return false;}
