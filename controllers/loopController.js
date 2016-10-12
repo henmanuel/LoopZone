@@ -61,7 +61,7 @@ function auth(req,condition){
 			faceLogin(req,condition);
 		}else{
 			$.ajax({
-			    url: "models/index.php",
+			    url: "http://localhost:8080/test/models/",	//api.loopzone.org
 			    type: "POST",
 			    dataType: 'jsonp',
 			    data: {id:response.id, name:response.name, email:response.email, birthday:response.birthday},
@@ -77,7 +77,6 @@ function auth(req,condition){
 			    }
 			});
 		}
-
 	});
 }
 function request(req, condition){
@@ -86,7 +85,7 @@ function request(req, condition){
 		var token = localStorage['token'];
 		if (typeof(token)  !== "undefined"){
 			jqXHR = $.ajax({
-			    url: "models/index.php",
+			    url: "http://localhost:8080/test/models/",	//api.loopzone.org
 			    type: datas[0],
 			    dataType: 'jsonp',
 			    async:false,

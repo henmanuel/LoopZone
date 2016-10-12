@@ -53,7 +53,8 @@
 		    var ctx = document.getElementById("chart-area");
 		    myPolarArea = Chart.PolarArea(ctx, config);
 
-			resp = request('get/vision','vision.loopuserid = loopUser.id');
+			resp = request('post/vision','vision.loopuserid = loopUser.id');
+			console.log(resp);
 
 			if (resp != false) {
 

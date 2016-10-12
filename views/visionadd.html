@@ -14,8 +14,8 @@
 		var desc = $('#descVision').val();
 		var lapse = $('#lapseVision').prop("checked");
 
-		day=new Date();
-		var month = day.getMonth()+1;
+		day = new Date();
+		var month = day.getMonth() + 1;
 
 		if (lapse == false){
 			var year = day.getFullYear() + 3;
@@ -26,8 +26,7 @@
 		var end = year+"-"+month+"-"+day.getDate();
 		day = day.getFullYear()+"-"+month+"-"+day.getDate();
 
-		var condition = 'loopuserid,name,description,start,end/"'+name+'","'+desc+'",'+day+','+end;
-		var con = request('post/vision',condition);
+		var con = request('post/vision','name,description,start,end/'+name+','+desc+','+day+','+end);
 		console.log(con);
 	});
 </script>
