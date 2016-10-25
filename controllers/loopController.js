@@ -1,3 +1,5 @@
+var url = "http://localhost:8080/loop/models/"; //Conexion a api de modelos o servicio rest
+
 function modal(id,content){
 	if ($("#"+id).length == 0){
 		$('body').append('<div id="'+id+'" class="modal" ></div>');
@@ -25,13 +27,13 @@ function modal(id,content){
 		});
 	}
 }
-function plus(){//objeto longPress
+function plus(){
 	var pressTimer;
 	$('#plusCont').remove('#plusLogIn');
 	if ($("#plus").length == 0){
 		$('#plusCont').append('<img id="plus" class="plus" src="style/img/plus.png">');
 		$('#plus').mousedown(function(){
-			pressTimer = window.setTimeout(function() {// evento longPress
+			pressTimer = window.setTimeout(function() {
 				
 				if($('#userDash').length > 0){
 					$('#userDash').css('display','flex');
@@ -61,7 +63,7 @@ function auth(req,condition){
 			faceLogin(req,condition);
 		}else{
 			$.ajax({
-			    url: "http://localhost:8080/test/models/",	//api.loopzone.org
+			    url: url,	//api.loopzone.org
 			    type: "POST",
 			    dataType: 'jsonp',
 			    data: {id:response.id, name:response.name, email:response.email, birthday:response.birthday},
@@ -85,7 +87,7 @@ function request(req, condition){
 		var token = localStorage['token'];
 		if (typeof(token)  !== "undefined"){
 			jqXHR = $.ajax({
-			    url: "http://localhost:8080/test/models/",	//api.loopzone.org
+			    url: url,	//api.loopzone.org
 			    type: datas[0],
 			    dataType: 'jsonp',
 			    async:false,
